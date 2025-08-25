@@ -37,5 +37,5 @@ https://pypi.org/project/dida365/
 You can host or run the bot by running:
 ```sh
 pip install -r requirements.txt
-streamlit run app.py
+python bot.py
 ```
