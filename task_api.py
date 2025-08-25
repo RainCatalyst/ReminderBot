@@ -45,6 +45,3 @@ class TaskAPI:
         projects = await self.client.get_projects()
         for project in projects:
             print(f"Project: {project.name} ({project.id})")
-
-# Example usage:
-# asyncio.run(TaskManager().create_task("Test Task", "This is a test."))
