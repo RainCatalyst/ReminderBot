@@ -1,0 +1,69 @@
+import pytest
+from datetime import datetime, timedelta
+from parser import parse
+
+def date_only(dt):
+    return dt.date() if dt else None
+
+def test_next_monday():
+    today = datetime(2025, 5, 31)  # Saturday
+    expected = datetime(2025, 6, 2).date()  # Next Monday
+    result, up_to_hour, _ = parse("next monday", today)
+    assert date_only(result) == expected
+    assert not up_to_hour
+
+def test_tomorrow():
+    today = datetime(2025, 5, 31)
+    expected = datetime(2025, 6, 1).date()
+    result, up_to_hour, _ = parse("tomorrow", today)
+    assert date_only(result) == expected
+    assert not up_to_hour
+
+def test_in_3_days():
+    today = datetime(2025, 5, 31)
+    expected = datetime(2025, 6, 3).date()
+    result, up_to_hour, _ = parse("in 3 days", today)
+    assert date_only(result) == expected
+    assert not up_to_hour
+
+def test_in_5_hours():
+    today = datetime(2025, 5, 31, 10, 0)
+    result, up_to_hour, _ = parse("in 5 hours", today)
+    expected_hour = today + timedelta(hours=5)
+    assert result.date() == today.date()
+    assert result.hour == expected_hour.hour
+    assert up_to_hour
+
+def test_on_friday():
+    today = datetime(2025, 5, 29)  # Thursday
+    expected = datetime(2025, 5, 30).date()  # This Friday
+    result, up_to_hour, _ = parse("on friday", today)
+    assert date_only(result) == expected
+    assert not up_to_hour
+
+# def test_next_monday():
+#     today = datetime(2025, 5, 31)
+#     expected = datetime(2025, 6, 2).date()
+#     result, up_to_hour, _ = parse("in 2 weeks monday", today)
+#     assert date_only(result) == expected
+#     assert not up_to_hour
+
+def test_next_tuesday():
+    today = datetime(2025, 5, 31)
+    expected = datetime(2025, 6, 3).date()
+    result, up_to_hour, _ = parse("next tuesday", today)
+    assert date_only(result) == expected
+    assert not up_to_hour
+
+def test_next_week_tuesday():
+    today = datetime(2025, 5, 31)
+    expected = datetime(2025, 6, 3).date()
+    result, up_to_hour, _ = parse("next week on tuesday", today)
+    assert date_only(result) == expected
+    assert not up_to_hour
+
+def test_unrecognized_text():
+    today = datetime(2025, 5, 31)
+    result, up_to_hour, leftovers = parse("banana rocketship day", today)
+    assert result is None
+    assert leftovers == ['banana', 'rocketship', 'day']
